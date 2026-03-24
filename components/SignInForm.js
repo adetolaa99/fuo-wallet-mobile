@@ -49,11 +49,9 @@ const SignInForm = ({ navigation }) => {
         console.error("Response data:", error.response.data);
         setErrorMessage(error.response.data.message || "An error occurred.");
       } else if (error.request) {
-        // The request was made, but no response was received
         console.error("Request data:", error.request);
         setErrorMessage("No response received from the server.");
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error("Error message:", error.message);
         setErrorMessage("Error setting up request.");
       }

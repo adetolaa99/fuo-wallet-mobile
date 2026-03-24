@@ -14,7 +14,6 @@ const BalanceForm = forwardRef((props, ref) => {
   const [balances, setBalances] = useState([]);
   const [publicKey, setPublicKey] = useState(null);
 
-  // Mapping asset types to their names
   const assetTypeNames = {
     credit_alphanum4: "FUC",
     native: "XLM",

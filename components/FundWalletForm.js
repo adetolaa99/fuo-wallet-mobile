@@ -65,7 +65,7 @@ const FundWalletForm = forwardRef((props, ref) => {
   };
 
   const handlePaymentSuccess = async (reference) => {
-    setVerifyingPayment(true); // Set verifyingPayment to true when payment verification starts
+    setVerifyingPayment(true);
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
@@ -116,7 +116,7 @@ const FundWalletForm = forwardRef((props, ref) => {
       console.error("Payment verification error: ", error);
       Alert.alert("Error", "Payment verification failed");
     } finally {
-      setVerifyingPayment(false); // Set verifyingPayment to false when the process is complete
+      setVerifyingPayment(false);
     }
   };
 
@@ -154,7 +154,7 @@ const FundWalletForm = forwardRef((props, ref) => {
       <TouchableOpacity
         style={styles.button}
         onPress={handleFundWallet}
-        disabled={loading || verifyingPayment} // Disable button during verification
+        disabled={loading || verifyingPayment}
       >
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />

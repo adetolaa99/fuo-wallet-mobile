@@ -4,7 +4,7 @@ This is the React Native mobile app for the FUO Wallet System. It allows users t
 
 **Related repositories:**
 
-- Backend (Node.js/Express): [fuo-wallet-backend](https://github.com/adetolaa99/backend-prj)
+- Backend (Node.js/Express): [fuo-wallet-backend](https://github.com/adetolaa99/fuo-wallet-backend)
 - Web App (React): [fuo-wallet-web](https://github.com/adetolaa99/fuo-wallet-web)
 
 ---
@@ -30,8 +30,8 @@ This is the React Native mobile app for the FUO Wallet System. It allows users t
 ### Installation
 
 ```bash
-git clone https://github.com/adetolaa99/mobile-prj.git
-cd mobile-prj
+git clone https://github.com/adetolaa99/fuo-wallet-mobile.git
+cd fuo-wallet-mobile
 npm install
 ```
 
