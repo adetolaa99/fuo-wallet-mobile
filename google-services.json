@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002026042457",
+    "project_id": "messagepipe-730f6",
+    "storage_bucket": "messagepipe-730f6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002026042457:android:246d15e9799aa7666ddd48",
+        "android_client_info": {
+          "package_name": "com.adetola.fuowalletmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjf2UqgJolQkFrTc6mOJidunnAH7RrtI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

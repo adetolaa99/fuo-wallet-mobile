@@ -19,14 +19,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.adetolaaa.fuowalletmobile"
+      "googleServicesFile": "./google-services.json",
+      "package": "com.adetola.fuowalletmobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "adetolaaa",
     "extra": {
       "eas": {
-        "projectId": "e1a1ca7c-5bdc-4c5c-be0a-d53592bb5635"
+        "projectId": "a7443c4b-42d7-4b4e-a39a-f84218035296"
       }
     }
   }
