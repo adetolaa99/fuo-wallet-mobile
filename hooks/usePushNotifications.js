@@ -17,10 +17,7 @@ export const usePushNotifications = (userId) => {
     if (!userId) return;
 
     const registerForPushNotifications = async () => {
-      if (!Device.isDevice) {
-        console.log("Push notifications require a physical device");
-        return;
-      }
+      if (!Device.isDevice) return;
 
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
@@ -31,15 +28,10 @@ export const usePushNotifications = (userId) => {
         finalStatus = status;
       }
 
-      if (finalStatus !== "granted") {
-        console.log("Push notification permission not granted");
-        return;
-      }
+      if (finalStatus !== "granted") return;
 
       const token = await Notifications.getDevicePushTokenAsync();
-      const platform = Platform.OS;
-
-      await registerDeviceToken(userId, token.data, platform);
+      await registerDeviceToken(userId, token.data, Platform.OS);
     };
 
     void registerForPushNotifications();
