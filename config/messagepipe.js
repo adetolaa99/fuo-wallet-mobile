@@ -1,21 +1,23 @@
 import axios from "axios";
+import { API_URL } from "./api";
 
-const MESSAGEPIPE_URL = process.env.EXPO_PUBLIC_MESSAGEPIPE_URL;
-const MESSAGEPIPE_API_KEY = process.env.EXPO_PUBLIC_MESSAGEPIPE_API_KEY;
-
-export const registerDeviceToken = async (userId, deviceToken, platform) => {
+export const registerDeviceToken = async (deviceToken, platform) => {
   try {
+    const AsyncStorage = (await import("@react-native-async-storage/async-storage")).default;
+    const token = await AsyncStorage.getItem("authToken");
+    if (!token) return;
+
     await axios.post(
-      `${MESSAGEPIPE_URL}/push/register-device`,
-      { userId, deviceToken, provider: "fcm", platform },
+      `${API_URL}/users/register-device`,
+      { deviceToken, platform },
       {
         headers: {
-          "x-api-key": MESSAGEPIPE_API_KEY,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       },
     );
   } catch (error) {
-    console.warn("Failed to register device with MessagePipe:", error?.message);
+    console.warn("Failed to register device:", error?.message);
   }
 };

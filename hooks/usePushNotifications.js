@@ -12,10 +12,8 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export const usePushNotifications = (userId) => {
+export const usePushNotifications = () => {
   useEffect(() => {
-    if (!userId) return;
-
     const registerForPushNotifications = async () => {
       if (!Device.isDevice) return;
 
@@ -31,9 +29,9 @@ export const usePushNotifications = (userId) => {
       if (finalStatus !== "granted") return;
 
       const token = await Notifications.getDevicePushTokenAsync();
-      await registerDeviceToken(userId, token.data, Platform.OS);
+      await registerDeviceToken(token.data, Platform.OS);
     };
 
     void registerForPushNotifications();
-  }, [userId]);
+  }, []);
 };
