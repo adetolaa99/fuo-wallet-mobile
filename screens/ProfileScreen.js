@@ -12,6 +12,7 @@ import axios from "axios";
 import { API_URL } from "../config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Clipboard from "expo-clipboard";
+import OneSignal from "react-native-onesignal";
 
 const ProfileScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
@@ -55,6 +56,7 @@ const ProfileScreen = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.multiRemove(["authToken", "profile"]);
+      OneSignal.logout();
       navigation.reset({
         index: 0,
         routes: [{ name: "Auth" }],

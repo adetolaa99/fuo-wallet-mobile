@@ -14,6 +14,7 @@ import axios from "axios";
 import { API_URL } from "../config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import OneSignal from "react-native-onesignal";
 
 const SignInForm = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,7 @@ const SignInForm = ({ navigation }) => {
       const { token, profile } = response.data;
       await AsyncStorage.setItem("authToken", token);
       await AsyncStorage.setItem("profile", JSON.stringify(profile));
+      OneSignal.login(profile.id);
       navigation.replace("App");
     } catch (error) {
       console.error("Login error:", error);
