@@ -12,7 +12,6 @@ import axios from "axios";
 import { API_URL } from "../config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Clipboard from "expo-clipboard";
-import OneSignal from "react-native-onesignal";
 
 const ProfileScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
@@ -49,14 +48,19 @@ const ProfileScreen = ({ navigation }) => {
     Clipboard.setString(text);
     Alert.alert(
       "Copied to Clipboard",
-      "The key has been copied to your clipboard."
+      "The key has been copied to your clipboard.",
     );
   };
 
   const handleLogout = async () => {
     try {
       await AsyncStorage.multiRemove(["authToken", "profile"]);
-      OneSignal.logout();
+      try {
+        const OneSignal = (await import("react-native-onesignal")).default;
+        OneSignal.logout();
+      } catch (e) {
+        console.warn("OneSignal logout failed:", e);
+      }
       navigation.reset({
         index: 0,
         routes: [{ name: "Auth" }],

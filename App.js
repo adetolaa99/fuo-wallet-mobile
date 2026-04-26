@@ -1,29 +1,26 @@
 import React, { useEffect } from "react";
 import RootNavigator from "./navigation/RootNavigator.js";
-import OneSignal from "react-native-onesignal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { jwtDecode } from "jwt-decode";
 
 export default function App() {
   useEffect(() => {
-    OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID);
-    OneSignal.Notifications.requestPermission(true);
-
-    const setExternalId = async () => {
+    const initOneSignal = async () => {
       try {
-        const token = await AsyncStorage.getItem("authToken");
-        if (token) {
-          const decoded = jwtDecode(token);
-          if (decoded.userId) {
-            OneSignal.login(decoded.userId);
-          }
-        }
+        console.log("OneSignal: starting init");
+        const OneSignal = (await import("react-native-onesignal")).default;
+        console.log("OneSignal: module imported successfully");
+        OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID);
+        console.log(
+          "OneSignal initialized with App ID:",
+          process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID,
+        );
+        OneSignal.Notifications.requestPermission(true);
+        console.log("OneSignal: permission requested");
       } catch (e) {
-        console.warn("OneSignal: failed to set external ID on init", e);
+        console.warn("OneSignal init failed (expected in Expo Go):", e);
       }
     };
 
-    void setExternalId();
+    void initOneSignal();
   }, []);
 
   return <RootNavigator />;

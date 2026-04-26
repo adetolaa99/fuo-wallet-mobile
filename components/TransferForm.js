@@ -21,46 +21,58 @@ const TransferForm = forwardRef((props, ref) => {
     if (!receiverPublicKey || !amount) {
       Alert.alert(
         "Error!",
-        "Please enter both the receiver's public key and the amount"
+        "Please enter both the receiver's public key and the amount",
       );
       return;
     }
-    setLoading(true);
 
-    try {
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) {
-        Alert.alert("Error!", "No auth token found");
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.post(
-        `${API_URL}/stellar/transfer`,
-        { receiverPublicKey, amount },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      Alert.alert(
-        "Success!",
-        "You've successfully transferred FUC to another user"
-      );
-    } catch (error) {
-      let errorMessage = "Something went wrong";
-      if (error.response) {
-        if (
-          error.response.status === 400 &&
-          error.response.data === "The receiver account does not exist!"
-        ) {
-          errorMessage =
-            "The receiver's public key is invalid! Please check and try again.";
-        } else {
-          errorMessage = error.response.data;
-        }
-      }
-      Alert.alert("Error", errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert(
+      "Confirm Transfer",
+      `Send ${amount} FUC to ${receiverPublicKey.slice(0, 10)}...${receiverPublicKey.slice(-6)}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              const token = await AsyncStorage.getItem("authToken");
+              if (!token) {
+                Alert.alert("Error!", "No auth token found");
+                setLoading(false);
+                return;
+              }
+              await axios.post(
+                `${API_URL}/stellar/transfer`,
+                { receiverPublicKey, amount },
+                { headers: { Authorization: `Bearer ${token}` } },
+              );
+              Alert.alert(
+                "Success!",
+                "You've successfully transferred FUC to another user.",
+              );
+              resetForm();
+            } catch (error) {
+              let errorMessage = "Something went wrong";
+              if (error.response) {
+                if (
+                  error.response.status === 400 &&
+                  error.response.data === "The receiver account does not exist!"
+                ) {
+                  errorMessage =
+                    "The receiver's public key is invalid! Please check and try again.";
+                } else {
+                  errorMessage = error.response.data;
+                }
+              }
+              Alert.alert("Error", errorMessage);
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const resetForm = () => {

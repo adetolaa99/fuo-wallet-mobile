@@ -8,17 +8,16 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import axios from "axios";
-import { API_URL } from "../config/api";
 import { WebView } from "react-native-webview";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { API_URL } from "../config/api";
 
 const FundWalletForm = forwardRef((props, ref) => {
   const { onRefresh } = props;
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [paymentIntent, setPaymentIntent] = useState(null);
   const [showWebView, setShowWebView] = useState(false);
   const [authorizationUrl, setAuthorizationUrl] = useState("");
   const [verifyingPayment, setVerifyingPayment] = useState(false);
@@ -29,7 +28,6 @@ const FundWalletForm = forwardRef((props, ref) => {
       return;
     }
     setLoading(true);
-
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
@@ -37,27 +35,17 @@ const FundWalletForm = forwardRef((props, ref) => {
         setLoading(false);
         return;
       }
-
       const response = await axios.post(
         `${API_URL}/paystack/create-payment-intent`,
-        {
-          amount: amount,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { amount },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      console.log("Payment Intent Response: ", response.data);
-      setPaymentIntent(response.data);
       setAuthorizationUrl(response.data.data.authorization_url);
       setShowWebView(true);
     } catch (error) {
-      console.error("Funding Error: ", error);
       Alert.alert(
         "Error",
-        error.response ? error.response.data : "Something went wrong"
+        error.response ? error.response.data : "Something went wrong",
       );
     } finally {
       setLoading(false);
@@ -70,51 +58,33 @@ const FundWalletForm = forwardRef((props, ref) => {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
         Alert.alert("Error!", "No auth token found");
-        setLoading(false);
         return;
       }
 
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
 
-      console.log("Verifying payment with reference: ", reference);
-
-      const response = await axios.post(
+      const verifyResponse = await axios.post(
         `${API_URL}/paystack/verify-payment`,
-        {
-          reference: reference,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { reference },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      console.log("Verification Response: ", response.data);
 
-      if (response.data.success) {
-        console.log("Verification successful. Minting tokens...");
+      if (verifyResponse.data.success) {
         const mintResponse = await axios.post(
           `${API_URL}/paystack/mint-tokens`,
-          {
-            userId: userId,
-            amount: amount,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { userId, amount },
+          { headers: { Authorization: `Bearer ${token}` } },
         );
-        console.log("Mint Tokens Response: ", mintResponse.data);
-        Alert.alert("Success", "You've successfully funded your wallet!");
+        Alert.alert("Success!", "Your wallet has been funded successfully.");
+        setAmount("");
         onRefresh();
       } else {
         Alert.alert("Error", "Payment verification failed!");
       }
     } catch (error) {
-      console.error("Payment verification error: ", error);
-      Alert.alert("Error", "Payment verification failed");
+      console.error("Payment verification error:", error);
+      Alert.alert("Error", "Payment verification failed.");
     } finally {
       setVerifyingPayment(false);
     }
@@ -122,9 +92,7 @@ const FundWalletForm = forwardRef((props, ref) => {
 
   const handleWebViewNavigationStateChange = (navState) => {
     console.log("WebView Navigation State Change: ", navState.url);
-    if (
-      navState.url.includes("https://192.168.0.200:8080/api/paystack/callback")
-    ) {
+    if (navState.url.includes("/api/paystack/callback")) {
       setShowWebView(false);
       const urlParams = new URLSearchParams(navState.url.split("?")[1]);
       const reference = urlParams.get("reference");
@@ -137,9 +105,7 @@ const FundWalletForm = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    refreshForm: () => {
-      resetForm();
-    },
+    refreshForm: () => resetForm(),
   }));
 
   return (
@@ -167,21 +133,29 @@ const FundWalletForm = forwardRef((props, ref) => {
         <View style={styles.verifyingContainer}>
           <ActivityIndicator size="small" color="#006400" />
           <Text style={styles.verifyingText}>
-            Please wait, verifying payment...
+            Processing payment, please wait...
           </Text>
         </View>
       )}
 
       {showWebView && (
-        <WebView
-          source={{ uri: authorizationUrl }}
-          onNavigationStateChange={handleWebViewNavigationStateChange}
-          onError={(error) => console.error("WebView Error: ", error)}
-          onLoad={() => console.log("WebView loaded")}
-          onLoadStart={() => console.log("WebView load started")}
-          onLoadEnd={() => console.log("WebView load ended")}
-          style={{ marginTop: 20, height: 600, width: "100%" }}
-        />
+        <>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => {
+              setShowWebView(false);
+              setAuthorizationUrl("");
+            }}
+          >
+            <Text style={styles.cancelButtonText}>Cancel Payment</Text>
+          </TouchableOpacity>
+          <WebView
+            source={{ uri: authorizationUrl }}
+            onNavigationStateChange={handleWebViewNavigationStateChange}
+            onError={(error) => console.error("WebView Error: ", error)}
+            style={{ marginTop: 20, height: 600, width: "100%" }}
+          />
+        </>
       )}
     </View>
   );
@@ -222,6 +196,17 @@ const styles = StyleSheet.create({
   verifyingText: {
     color: "#006400",
     marginTop: 10,
+  },
+  cancelButton: {
+    marginTop: 10,
+    backgroundColor: "#dc3545",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
