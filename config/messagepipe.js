@@ -3,7 +3,9 @@ import { API_URL } from "./api";
 
 export const registerDeviceToken = async (deviceToken, platform) => {
   try {
-    const AsyncStorage = (await import("@react-native-async-storage/async-storage")).default;
+    const AsyncStorage = (
+      await import("@react-native-async-storage/async-storage")
+    ).default;
     const token = await AsyncStorage.getItem("authToken");
     if (!token) return;
 
